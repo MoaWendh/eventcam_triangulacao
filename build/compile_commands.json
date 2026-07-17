@@ -1,0 +1,22 @@
+[
+{
+  "directory": "/home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/build",
+  "command": "/usr/bin/c++ -DBOOST_ALL_NO_LIB -DBOOST_BIND_GLOBAL_PLACEHOLDERS -DBOOST_CHRONO_DYN_LINK -DBOOST_PROGRAM_OPTIONS_DYN_LINK -DBOOST_TIMER_DYN_LINK -I/opt/spinnaker/include -I/home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/include -isystem /usr/include/opencv4 -O3 -DNDEBUG -std=gnu++17 -o CMakeFiles/triangulacao.dir/triangulacao.cpp.o -c /home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/triangulacao.cpp",
+  "file": "/home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/triangulacao.cpp"
+},
+{
+  "directory": "/home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/build",
+  "command": "/usr/bin/c++ -DBOOST_ALL_NO_LIB -DBOOST_BIND_GLOBAL_PLACEHOLDERS -DBOOST_CHRONO_DYN_LINK -DBOOST_PROGRAM_OPTIONS_DYN_LINK -DBOOST_TIMER_DYN_LINK -I/opt/spinnaker/include -I/home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/include -isystem /usr/include/opencv4 -O3 -DNDEBUG -std=gnu++17 -o CMakeFiles/triangulacao.dir/controlIO.cpp.o -c /home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/controlIO.cpp",
+  "file": "/home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/controlIO.cpp"
+},
+{
+  "directory": "/home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/build",
+  "command": "/usr/bin/c++ -DBOOST_ALL_NO_LIB -DBOOST_BIND_GLOBAL_PLACEHOLDERS -DBOOST_CHRONO_DYN_LINK -DBOOST_PROGRAM_OPTIONS_DYN_LINK -DBOOST_TIMER_DYN_LINK -I/opt/spinnaker/include -I/home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/include -isystem /usr/include/opencv4 -O3 -DNDEBUG -std=gnu++17 -o CMakeFiles/triangulacao.dir/conv_camera.cpp.o -c /home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/conv_camera.cpp",
+  "file": "/home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/conv_camera.cpp"
+},
+{
+  "directory": "/home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/build",
+  "command": "/usr/bin/c++ -DBOOST_ALL_NO_LIB -DBOOST_BIND_GLOBAL_PLACEHOLDERS -DBOOST_CHRONO_DYN_LINK -DBOOST_PROGRAM_OPTIONS_DYN_LINK -DBOOST_TIMER_DYN_LINK -I/opt/spinnaker/include -I/home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/include -isystem /usr/include/opencv4 -O3 -DNDEBUG -std=gnu++17 -o CMakeFiles/triangulacao.dir/event_camera.cpp.o -c /home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/event_camera.cpp",
+  "file": "/home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/event_camera.cpp"
+}
+]
