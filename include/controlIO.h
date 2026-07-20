@@ -120,7 +120,7 @@ public:
 
 
 // Classe com métodos para configurar a Jetson Orin nano:
-class configJetson {
+class ConfigJetson {
 private:
     struct gpiod_chip *chip_ptr_interno= nullptr;
     GPIO_Lines gpios_internas= {nullptr, nullptr, nullptr, nullptr, nullptr};
@@ -157,12 +157,12 @@ private:
 
 public: 
     // Construtor padrão
-    configJetson()
+    ConfigJetson()
         : 
             chipIO("gpiochip0") {}; 
 
     //Destrutor da classe:
-    ~configJetson(){
+    ~ConfigJetson(){
         liberaGPIO_Jetson(this->chip_ptr_interno, this->gpios_internas);    
         std::cout << "Classe configJetson encerrada e hardware liberado." << std::endl;
     }
@@ -192,10 +192,14 @@ private:
     // Preferencialmente usar uma variável atômica em vez de primitiva, pois variáveis 
     // atomicas são mais adequadas para utilização com trheads, garantem sincornismo. 
     std::atomic<bool> is_active;
+    std::atomic<bool> is_pulsado;
+
 
 public:
     // Construtor da classe, inicializa a variável atômica com um estado seguro (desligado)
-    LightController() : is_active(false) {}
+    LightController():   
+        is_active(false), 
+        is_pulsado(false) {}
      
     ~LightController(){      
     };
@@ -225,8 +229,8 @@ public:
 // $ sudo cat /sys/kernel/debug/pwm 
 class PWM {
 private: 
-    int64_t period; // Em nano segundos.
-    int64_t dutyCycle; // Em percentual.
+    long period; // Em nano segundos.
+    long dutyCycle; // Em percentual.
     std::atomic<bool> active; 
 
     std::string fullPath_chip;
@@ -248,7 +252,7 @@ private:
 
 public:
     // Construtor com as devidas inicializações das variáveis menbros privadas:
-    PWM(int64_t periodo_ns, int64_t dutycycle_perc, std::string pathToChannel, std::string canal);
+    PWM(long periodo_ns, long dutycycle_perc, std::string pathToChannel, std::string canal);
 
     // Destrutor da classe, desabilita o PWM e libera o canal:
     ~PWM();      

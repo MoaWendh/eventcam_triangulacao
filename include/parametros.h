@@ -86,6 +86,9 @@ struct PARAMETROS_GERAIS {
     int bias_refr_min           = 1300;
     int bias_refr_max           = 1800;
 
+    // Define o path do arquivo que contem os parametos de trinagulação:
+    std::string pathFileParametersTriangulation = "../params_triangulacao.json"; 
+
     // Relativo a interface SPI:
     uint8_t spi_mode        = SPI_MODE_1;      // Esta definido em <linux/spi/spidev.h>
     uint8_t spi_num_bits    = 8;               // Define quantos bits o controlador da SPI deve agrupar e processar por vez no seu shift register.
@@ -100,9 +103,10 @@ struct PARAMETROS_GERAIS {
     int motor_num_ciclos           = 1;      // Numero de varreduras do motor. 
     int motor_delay_passo          = 200;     // valor em microsegundos.
     
-
-    std::string pathFileParametersTriangulation = "../params_triangulacao.json"; 
-    
+    // Relativo aos parametros da fonte laser:
+    bool laser_pulsado             = true; 
+    int laser_passos_por_pulso     = 10;
+   
 };
 
 

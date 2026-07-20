@@ -1,48 +1,78 @@
 {
-"params": [
-   {
-      "name":"motor_pos_ang_ini",
-      "value": 241
-   },
-     
-   {
-      "name":"motor_pos_ang_fim",
-      "value": 223
-   },   
+   "params_motor": [
+      {
+         "name": "motor_pos_ang_ini",
+         "value": 241
+      },
+      {
+         "name": "motor_pos_ang_fim",
+         "value": 223
+      },
+      {
+         "name": "motor_num_ciclos",
+         "value": 1
+      },
+      {
+         "name": "motor_pulsos_por_revolucao",
+         "value": 3200
+      },
+      {
+         "name": "motor_delay_passo",
+         "value": 1000
+      },
+      {
+         "name": "motor_res_encoder",
+         "value": 16384
+      }
+   ],
 
-   {
-      "name":"motor_num_ciclos",
-      "value": 1
-   },
+   "params_spi": [
+      {
+         "name": "spi_sck",
+         "value": 1000000
+      },
+      {
+         "name": "spi_num_bits",
+         "value": 8
+      },
+      {
+         "name": "spi_device",
+         "value": "/dev/spidev0.0"
+      }
+   ],
 
-   {
-      "name":"motor_pulsos_por_revolucao",
-      "value": 3200
-   },   
+   "params_laser": [
+      {
+         "name": "pulsado",
+         "value": false
+      },
 
-   {
-      "name": "motor_delay_passo",
-      "value": 200
-   },
+      {
+         "name": "passos_por_pulso",
+         "value": 50
+      }
+   ],
 
-   {
-      "name":"motor_res_encoder",
-      "value": 16384
-   }, 
+   "params_pwm": [
+      {
+         "name": "duty_cycle_pwm_A",
+         "value": 50
+      },
 
-   {
-      "name":"spi_sck",
-      "value": 1000000
-   }, 
+      {
+         "name": "duty_cycle_pwm_B",
+         "value": 15
+      },      
 
-   {
-      "name":"spi_num_bits",
-      "value": 8
-   },   
+      {
+         "name": "periodo_pwm_A",
+         "value": 10000000
+      },
 
-   {
-      "name":"spi_device",
-      "value": "/dev/spidev0.0" 
-   }
-]
+      {
+         "name": "periodo_pwm_B",
+         "value": 500000
+      }
+   ]
+
 }

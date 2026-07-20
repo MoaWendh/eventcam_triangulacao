@@ -1,13 +1,16 @@
 // Autor: Moacir Wendhausen    
 // Projeto: VORIS
 // Data: 10/01/2026
-// Controle aquisição: sistema estéreo baseado em duas câmeras de eventos SylkEvCam da Cenury Arks.
-// Programa principal que controla a captura de dados das câmeras de eventos e convencionais, bem como o controle do trigger por hardware e do LED de iluminação.
-// Apresenta um menu interativo no terminal para controle das opções baseado nas libs do OpenCV, e um dashboard visual, também OpenCV, para exibir os frames 
-// capturados e o menu de controle em tempo real.
-// São utilizados dosi canais de PWM da Jetson Orina Nano para controlar o blink do LED e a potência do LED.
-// O trigger por hardware é gerado usando os GPIOs da Jetson Orin Nano, controlados via a interface Sysfs do Linux.
-// Os principais parâmetros estão definidos no header "parametros.h", como os tempos de trigger, números de série das câmeras, configurações de PWM, entre outros.
+//
+// Funcionalidades Principais
+// 1- Varredura Óptica: Projeção de linha laser com varredura espacial controlada por um espelho plano acoplado ao eixo de um motor de passo.
+// 2- Controle de Potência: Modulação da intensidade do laser através de sinal PWM.
+// 3- Processamento Assíncrono: Arquitetura baseada em multithreading, isolando o controle físico da varredura de triangulação da renderização visual. 
+// Isso evita o congelamento de quadros durante a atuação do motor.
+// 4- Interface Gráfica (GUI): Renderização da matriz de eventos em tempo real e menu de controle de parâmetros desenvolvidos nativamente sobre o Canvas do OpenCV.
+// 5- Aquisição e Gravação de Dados: Exportação bruta de eventos para arquivos de dados binários formato `.dat`.
+// 6- Sincronização espacial: Durante a varredura, o software mapeia e registra um arquivo `.dat` exclusivo para cada incremento, posição angular, da linha laser.
+//
 
 #include <gpiod.h>
 #include <iostream>
@@ -98,7 +101,7 @@ void saveData_Mono_TriggerHW(EventCamera &cam, gpiod_line *line, const PARAMETRO
             // Mantém o pulso em nivel alto pelo tempo especificado em "duracao_pulso_trigger_microSeg":
             std::this_thread::sleep_for(std::chrono::microseconds(params.duracao_pulso_trigger));
 
-            // Transição do trigger para nível alto:
+            // Transição do trigger para nível baixo:
             gpiod_line_set_value(line, 0);
             // ******************** Fim do pulso de trigger ******************
 
@@ -116,6 +119,79 @@ void saveData_Mono_TriggerHW(EventCamera &cam, gpiod_line *line, const PARAMETRO
         std::cerr << "[ERRO] Falha na thread de captura: " << e.what() << std::endl;
     }
 }
+
+
+
+
+// Inicia a camera de eventos para salvar dados em arquivo .data a partir de trigger de HW
+std::string startTriggerSaveEventToFile(EventCamera &cam, gpiod_line *line, const PARAMETROS_GERAIS &params) {
+    std::string full_path="";
+    try {
+        // Obter data para o nome da pasta e do arquivo:
+        auto agora = std::chrono::system_clock::now();
+        auto tempo_t = std::chrono::system_clock::to_time_t(agora);
+        struct tm *info = std::localtime(&tempo_t);
+
+        // gera o nome do diretório:
+        std::stringstream ss_pasta;
+        ss_pasta << "data_evecam_" << std::put_time(info, "%d_%m_%Y");
+        std::string nome_pasta = ss_pasta.str();
+
+        // Criar a pasta se ela não existir
+        if (!std::filesystem::exists(nome_pasta)) {
+            std::filesystem::create_directory(nome_pasta);
+        }
+
+        // Gera o nome do arquivo de dados .raw:
+        std::string serialNumber= cam.getSerial();
+        std::stringstream ss_time;
+        ss_time << std::put_time(info, "%H%M%S");
+        std::string time= ss_time.str();
+        std::string filename= "evecam_sn" + serialNumber + "_" + time + ".raw";
+        std::string full_path= nome_pasta + '/' + filename;
+        std::cout<<"salvando em: "<< full_path<< std::endl; 
+
+        // Inicia Gravação doarquivo de dados:
+        if (cam.startRecording(full_path)){
+            std::cout << "Salvando dados ....." << std::endl;
+
+            // Pré-trigger: aguarda um tempo em microsegundos definido em duracao_PosTrigger_microSeg para garantir que o arquivo foi aberto e o buffer inicializou:
+            std::this_thread::sleep_for(std::chrono::microseconds(params.duracao_pre_trigger));
+            
+            // ******************* Início do pulso de trigger **************** 
+            // Transição do trigger para nível alto:
+            gpiod_line_set_value(line, 1);  
+        }
+
+    } catch (const std::exception &e) {
+        std::cerr << "[ERRO] Falha na thread de captura: " << e.what() << std::endl;
+    }
+    return full_path;
+}
+
+
+
+// Salva eventos de dados em arquico .raw a aprtir do trigger de HW:
+void stopTriggerSaveEventToFile(EventCamera &cam, gpiod_line *line, const std::string path, const PARAMETROS_GERAIS &params) {
+    try {
+        // ******************** Fim do pulso de trigger ******************
+        // Transição do trigger para nível baixo:
+        gpiod_line_set_value(line, 0);
+
+        // Pós-trigger: aguarda um tempo em microsegundos definido em duracao_PosTrigger_microSeg antes de fecahr o arquivo de dados: 
+        std::this_thread::sleep_for(std::chrono::microseconds(params.duracao_pos_trigger));
+
+        // Finaliza a Gravação e fecha arquivo de dados:
+        if (cam.stopRecording())
+            std::cout << "Dados salvos no arquivo: " << "\"" << path << "\"" << std::endl;
+        else
+            std::cout << "!!!ERRO ao fechar arquivo:" << std::endl;
+    }
+    catch (const std::exception &e) {
+        std::cerr << "[ERRO] Falha na thread de captura: " << e.what() << std::endl;
+    }
+}
+
 
 
 
@@ -213,7 +289,6 @@ void decrementaPWM(PWM& pwm, const std::string funcao_PWM){
     }
     else
         std::cout<< "Duty-Cycle= 0%)";                               
-
 }
 
 
@@ -260,74 +335,6 @@ bool detectaCamerasConectadas(){
         return false;
     }    
 }
-
-
-
-// Este menu é exibido no terminal do OpenCV junamente com os frames capturados pela câmera convencional, 
-// para facilitar a visualização e controle das opções de trigger e configuração do LED. 
-// Ele é desenhado diretamente sobre o frame da câmera convencional, utilizando as funções de desenho do OpenCV, 
-// como putText e circle. O menu inclui as opções de controle, bem como um indicador "LIVE" que pisca para mostrar que a captura está ativa. 
-// A função MenuFrame é chamada a cada frame capturado pela câmera convencional para atualizar o menu em tempo real.
-void MenuFrame(const cv::Mat& input, cv::Mat& output) {
-    if (input.empty()) return;
-
-    int largura_menu = 300;
-
-    // 1. Garante que o input seja convertido para 3 canais (Colorido) 
-    // para podermos desenhar em Verde/Vermelho.
-    cv::Mat input_color;
-    if (input.channels() == 1) {
-        cv::cvtColor(input, input_color, cv::COLOR_GRAY2BGR);
-    } else {
-        input_color = input;
-    }
-
-    // 2. Cria a moldura com a borda preta à direita
-    cv::copyMakeBorder(input_color, output, 0, 0, 0, largura_menu, cv::BORDER_CONSTANT, cv::Scalar(0, 0, 0));
-
-    // 3. Configurações de texto
-    int x_start = input_color.cols + 20;
-    int y_start = 40;
-    int espacamento = 30;
-
-    std::vector<std::string> itens = {
-        "*** MENU DE CONTROLE ***",
-        "1 - Ler biases",
-        "2 - Gravar biases",
-        "3 - Trigger (Gravacao)",
-        "4 - Start/Stop Blink LED",
-        "5 - Captura Convencional",
-        "-----------------------",
-        "+ / - : Duty Cycle Tensão",
-        "> / < : Duty Cycle Blink Light",
-        "L : Limpa Tela",
-        "Q : Sair"
-    };
-
-    // 4. Desenha o texto
-    for (size_t i = 0; i < itens.size(); ++i) {
-        cv::putText(output, 
-                    itens[i], 
-                    cv::Point(x_start, y_start + (int)(i * espacamento)), 
-                    cv::FONT_HERSHEY_SIMPLEX, 
-                    0.5, 
-                    cv::Scalar(0, 255, 0), // Verde
-                    1, 
-                    cv::LINE_AA);
-    }
-
-    // 5. Indicador "LIVE" (Círculo vermelho piscando no canto superior direito)
-    // Usamos o tempo do sistema para fazer piscar
-    auto milis = std::chrono::duration_cast<std::chrono::milliseconds>(
-                 std::chrono::system_clock::now().time_since_epoch()).count();
-    
-    if ((milis / 500) % 2 == 0) { // Pisca a cada 500ms
-        cv::circle(output, cv::Point(output.cols - 20, 20), 7, cv::Scalar(0, 0, 255), -1);
-        cv::putText(output, "LIVE", cv::Point(output.cols - 60, 25), 
-                    cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(0, 0, 255), 1);
-    }
-}
-
 
 
 
@@ -439,7 +446,7 @@ void configuraFrameGenerator(configFrameGenerator &configFG, EventCamera &event_
 
 // Função para leitura do arquivo .json que contpem os parametros de configuração do sistema de tringualação laser, referentes ao motor e ao encoder.
 // Os paramentros lidos são armazenados na struct "params" do tipo struct "PARAMETROS_GERAIS", definida em "parametros.h".
-int  lerParametrosTriangulcaoJson(PARAMETROS_GERAIS &params){
+int  lerParametrosTriangulacaoJson(PARAMETROS_GERAIS &params){
     std::string path= params.pathFileParametersTriangulation;
     
     // Abre um stream para o arquivo .json:
@@ -453,12 +460,11 @@ int  lerParametrosTriangulcaoJson(PARAMETROS_GERAIS &params){
     // Escreve o conteudo de file no objeto data:
     file >> data;
 
-    // Navega na estrutura: ll_biases_state -> bias (que é um array)
-    auto params_aux= data["params"];
-    // std::cout << std::endl;
+    // Variavel auxiliar apenas parametros do motor:
+    auto params_aux= data["params_motor"];
+    // Faz a leitura dos parametros do motor:
     for (auto &item: params_aux) {
-        //std::cout << "Parametro lido " << item["name"] << "= "<<  item["value"] << std::endl;
-        
+        //std::cout << "Parametro lido " << item["name"] << "= "<<  item["value"] << std::endl;     
         if (item["name"] == "motor_pos_ang_ini") 
             params.motor_pos_ang_ini= item["value"];
         
@@ -476,8 +482,13 @@ int  lerParametrosTriangulcaoJson(PARAMETROS_GERAIS &params){
 
         else if (item["name"] == "motor_res_encoder")
             params.motor_res_encoder= item["value"];
+    }        
 
-        else if (item["name"] == "spi_sck")
+    // Variavel auxiliar apenas parametros da intefaace spi:
+    params_aux= data["params_spi"];
+    // Faz a leitura dos parametros de inicialização da interface SPI: 
+    for (auto &item: params_aux) {
+        if (item["name"] == "spi_sck")
             params.spi_sck= item["value"];
 
         else if (item["name"] == "spi_num_bits")
@@ -485,27 +496,67 @@ int  lerParametrosTriangulcaoJson(PARAMETROS_GERAIS &params){
 
         else if (item["name"] == "spi_device")
             params.spi_device= item["value"]; 
+        else{
+            std::cout << "[Erro] Campo " << item["name"] << " não encontrado no arquivo: "<< path << std::endl;
+            return 0; // Não encontrado
+        }        
+    }
+
+
+    // Variavel auxiliar apenas parametros da fonte laser:
+    params_aux= data["params_laser"];
+    // Faz a leitura dos parametros de inicialização da interface SPI:   
+    for (auto &item: params_aux) {
+        if (item["name"] == "pulsado")
+            params.laser_pulsado= item["value"];
+
+        else if (item["name"] == "passos_por_pulso")
+            params.laser_passos_por_pulso= item["value"]; 
 
         else{
             std::cout << "[Erro] Campo " << item["name"] << " não encontrado no arquivo: "<< path << std::endl;
             return 0; // Não encontrado
         }        
     }
+
+    
+    // Variavel auxiliar apenas parametros da fonte laser:
+    params_aux= data["params_pwm"];
+    // Faz a leitura dos parametros de inicialização da interface SPI:   
+    for (auto &item: params_aux) {
+        if (item["name"] == "duty_cycle_pwm_A")
+            params.dutyCycle_PWM_A= item["value"];
+
+        else if (item["name"] == "duty_cycle_pwm_B")
+            params.dutyCycle_PWM_B= item["value"]; 
+
+        else if (item["name"] == "periodo_pwm_A")
+            params.periodo_PWM_A= item["value"]; 
+
+        else if (item["name"] == "periodo_pwm_B")
+            params.periodo_PWM_B= item["value"]; 
+        else{
+            std::cout << "[Erro] Campo " << item["name"] << " não encontrado no arquivo: "<< path << std::endl;
+            return 0; // Não encontrado
+        }        
+    }
+
     return 1;
 } 
         
 
 // Apenas habilita o PWM que controla a potencia do laser.
 // O PWM é enviado a placa que converte PWM para tensão:
-bool ativaLinhaLaser(PWM &pwm){
+void ativaLinhaLaser(PWM &pwm){
     // Verifica se o PWM da linha laser já está ativo :
     if (!pwm.getStatus()){
         // Tenta ativar o PWM que controla a linha laser:
         if (!pwm.enable())           {
-            return false;
-        }    
+            std::cout<<" [Atenção] NÂO foi possível ativar PWM -> Controla potencia da linha laser."<< std::endl;
+            return;
+        }
+        //std::cout << "PWM Laser ativado." << std::endl;    
     }
-    return true;
 }
 
 
@@ -513,6 +564,7 @@ bool ativaLinhaLaser(PWM &pwm){
 void desativaLinhaLaser(PWM &pwm){
     if (pwm.getStatus()){
         pwm.disable(); 
+        //std::cout << "Desativei o laser." << std::endl; 
     }
     else{
         std::cout<<" PWM laser já está desativado." << std::endl;
@@ -520,19 +572,22 @@ void desativaLinhaLaser(PWM &pwm){
 }
 
 
-// Função que efetua a varredura de trinagulação:
-void varreduraTriangulacao(gpiod_line *line_to_pulso, gpiod_line *line_to_dir, SPIDevice *spi, PARAMETROS_GERAIS &params, LightController &ledLight, PWM &pwm){
+// Decrementa o valor do PWM dado em percentual:
+void alteraDutyCyclePWM(PWM& pwm, const int64_t dutycycle_perc){ 
+    if (!pwm.setDutyCycle(dutycycle_perc)){
+        std::cout<< "[Erro] Duty cycle não foi ajustado!!)";
+    }                                 
+   // std::cout << "Duty-Cycle PWM= " << dutycycle_perc << std::endl;
+}
+
+
+
+// Função que efetua a varredura de trinagulação com laser continuo:
+void varreduraTriangulacaoLaserContinuo(gpiod_line *line_to_pulso, gpiod_line *line_to_dir, SPIDevice *spi, PARAMETROS_GERAIS &params, LightController &ledLight, PWM &pwm){
     std::cout << "Efetuando varredura laser" << std::endl;
 
     // Instancia o motor_passo passsando como paramentro o ponteiro spi:
     Motor motor_passo(spi);
-
-    // Le o arquivo "params_triagulacao.json" para atualizar os paramentros usados para tratar o controle do motor.
-    // Isto possibilita alterar os paramentros em tempo de execução.
-    if (!lerParametrosTriangulcaoJson(params)){
-        std::cout << "[Erro] Não foi possível abrir arquivo .json" << std::endl;
-        return;
-    }
 
     // Atualiza os atributos do objeto "motor_paso" para controle do motor, pois o arquivo "params_triangulacao.json" pode ter sido alterado: 
     motor_passo.setPulsoPorRevolucao(params.motor_pulsos_por_revolucao);
@@ -547,10 +602,7 @@ void varreduraTriangulacao(gpiod_line *line_to_pulso, gpiod_line *line_to_dir, S
 
     // Uma vez posicionado o motor no agnulo onicial, o PWM do laser é ativado.
     // Este sinal pwm é enviado ao conversor PWM-Tensão, pois o que controla a potencia do laser é a tensão:
-    if (!ativaLinhaLaser(pwm)){
-        std::cout<<" [Atenção] NÂO foi possível ativa PWM -> Controla potencia da linha laser."<< std::endl;
-        return;   
-    }
+    ativaLinhaLaser(pwm);
 
     int ctVarredura= 0;
     // Loop de malha fechada para incrementar o motor, passo-a-passo, até a posição final definida em :
@@ -594,12 +646,124 @@ void varreduraTriangulacao(gpiod_line *line_to_pulso, gpiod_line *line_to_dir, S
 
 
 
+
+// Função que efetua a varredura de trinagulação com laser pulsado:
+void varreduraTriangulacaoLaserPulsado(EventCamera &cam, gpiod_line *line_to_trigger_cam, gpiod_line *line_to_pulso, gpiod_line *line_to_dir, SPIDevice *spi, PARAMETROS_GERAIS &params, LightController &ledLight, PWM &pwm){
+    std::cout << "Efetuando varredura laser" << std::endl;
+
+    // Instancia o motor_passo passsando como paramentro o ponteiro spi:
+    Motor motor_passo(spi);
+
+    // Atualiza os atributos do objeto "motor_paso" para controle do motor, pois o arquivo "params_triangulacao.json" pode ter sido alterado: 
+    motor_passo.setPulsoPorRevolucao(params.motor_pulsos_por_revolucao);
+    motor_passo.setResolucaoEncoder(params.motor_res_encoder);
+
+    // Posiciona o motor no angulo inicial, conforme definido no parametro "params.motor_pos_ang_ini".
+    // A varredura com o laser será efetuad apenas após este posicionamento:
+    motor_passo.irParaPosicaoInicial(line_to_pulso, line_to_dir, params.motor_pos_ang_ini);
+
+    // Converte o "angulo" da posição final, dado em graus, para passos do encoder, valor entre 0 e 16383:
+    int16_t pos_final= static_cast<int16_t>((params.motor_pos_ang_fim*params.motor_res_encoder)/360.0);
+
+    int ctVarredura= 0;
+    // Loop de malha fechada para incrementar o motor, passo-a-passo, até a posição final definida em :
+
+    // Chama a gravação do dados da câmera de eventos, que é feita em paralelo, ou seja, enquanto a câmera de eventos está gravando os 
+    // dados no arquivo .raw, o programa continua executando as próximas linhas de código, sem esperar a finalização da gravação.   
+    // std::string path_file= startTriggerSaveEventToFile(cam, line_to_trigger_cam, params);
+
+    // Contador auxiliar para determinar quando o laser deve pulsar, considernado o nuero de passos por pulso definido em parametro 
+    // "laser_passos_por_pulso" em "parametros.h" e no arquivo .jason: 
+    int ctPassoPorPulsoLaser= 0;
+    //ativaLinhaLaser(pwm);
+    // Loop de varredura:
+    while(true){
+        //Incrementa o contador de varredura:
+        ctVarredura++;
+        ctPassoPorPulsoLaser++;
+
+        // Descobre a posição do motor de passo lendo o encoder:
+        motor_passo.lerEncoder();
+        uint16_t pos_atual_encoder= motor_passo.getPositionEncoder();
+               
+        // Calcula a distancai entre as posições atual e a posição desejada:
+        int32_t delta_pos= pos_final - pos_atual_encoder;
+
+        // Determina o caminho mais curto para reposicionar o motor:
+        if (delta_pos> (params.motor_res_encoder/2)) {
+            delta_pos -= params.motor_res_encoder;
+        } 
+        else if (delta_pos< -(params.motor_res_encoder/2)) {
+            delta_pos += params.motor_res_encoder;
+        }
+     
+        // Condição de parada!!!
+        // Se já estiver na posição atual, considerando uma margem de histerese de ruído do encoder, o loop while será encerrrado com break:
+        if (std::abs(delta_pos) <= 3) {
+            break; 
+        }        
+
+        // Define a direção, onde: sentido horário= true e sentido anti-horarrio= false. Conforme definição
+        // do step driver do motor, modelo "driverTB6600": 
+        bool direcao= (delta_pos > 0);
+        
+        // Chama o método de movimentação para executar a correção da posição do motor atando na GPIO da Jetso Orin nano
+        int delay= params.motor_delay_passo; 
+        
+        
+        // Da um pulso na fonte laser.
+        // Este parametro pwm é enviado ao conversor PWM-Tensão, pois o que controla a potencia do laser é a tensão:
+        if (ctPassoPorPulsoLaser> (params.laser_passos_por_pulso-1)){
+            ativaLinhaLaser(pwm);
+            //std::cout << "Ct passo por pulso laser= " << ctPassoPorPulsoLaser << std::endl;
+            
+            // Apenas da um wait na thread para dar tempo de setar o HW e consequentente ativar e desativar o laser:
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+
+            // Desativa a projeção da linha laser:
+            desativaLinhaLaser(pwm);             
+
+            // Zera o contador de passo por pulso laser:
+            ctPassoPorPulsoLaser= 0;
+        }
+
+        //Executa um passo do motor
+        motor_passo.darPasso(line_to_pulso, line_to_dir, direcao, delay); 
+    }
+
+    // Chama função que para a gravação de eventos em arquivo .dat.
+    //stopTriggerSaveEventToFile(cam, line_to_trigger_cam, path_file, params);
+    desativaLinhaLaser(pwm);
+    
+    std::cout << "Varredura finalizada. Total de passo= "<< ctVarredura << std::endl;
+    std::cout << std::endl;
+}
+
+
+
+
+int configuraGPIO_Jetson(ConfigJetson &config_Jetson, GPIO_Lines &gpios, gpiod_chip *chip){
+    // Chama o método get() para capturar as informações dos pinos e lines "ativos" da Jetson:    
+    auto activePins= config_Jetson.getPinos();
+    
+    // Chama o método de configuração "configura_Jetson.configura_GPIO_Jetson(&chip)" para inicialização do barramento GPIO da Jetson.
+    // Ela retorna uma struct contendo ponteiros com os endereços de cada linha do GPIO da Jetson para controle pelo Kernell.
+    // Através desses endereços que os pinos de IO são diretamente manipulados, por exemplo, mudanças de nivel lógico.
+    gpios= config_Jetson.configura_GPIO_Jetson(&chip);
+
+    // Por segurança, verifica se as linhas "gpios_actives" foram ativadas, configuradas ok, caso contrario o programa é abortado para evitar falhas de hardware:
+    if (!confirma_gpios_actives(gpios, chip))
+        return 0;
+    
+    return 1;
+}
+
 // Funcção principal:
 int main(int argc, char *argv[]) {
     // Rotina que limpa o terminal:
     limparTela();
 
-    // Carrgea os parametros gerais definidos na struct "PARAMETROS_GERAIS" do header "parametros.h":
+    // Instancia a struct contendo os parametros gerais, do tipo "PARAMETROS_GERAIS" definido do header "parametros.h":
     PARAMETROS_GERAIS parametros_gerais;
 
 
@@ -611,25 +775,14 @@ int main(int argc, char *argv[]) {
     struct gpiod_chip *chip = nullptr;
 
     // Isntancia um objeto para acessar a cofniguração do GPIO da Jetson. A classe está declarada no header "controlJetson.h":
-    configJetson configuraGPIO_Jetson;
+    ConfigJetson configura_Jetson;
 
-    // Chama o método get() para capturar as informações dos pinos e lines "ativos" da Jetson:    
-    auto activePins= configuraGPIO_Jetson.getPinos();
-    
-    // Separa as informações dos pinos por função:
-    int pin_PiscaLed= activePins.header_pin_IO_E;
-    int pin_TriggerEventCam= activePins.header_pin_IO_C;
-    int pin_TriggerCam= activePins.header_pin_IO_D;
-    //int pin_ControlLaser= activePins.header_pinH;
+    GPIO_Lines gpios_actives;
+    // Chama função que configura todo o GPIO da Jetson:
+    if (!configuraGPIO_Jetson(configura_Jetson, gpios_actives, chip)){
+        std::cout << "[Erro] Não foi possível configuar o GPIO da Jetson!"<< std::endl;
+    }
 
-    // Chama o método de configuração "configuraGPIO_Jetson.configura_GPIO_Jetson(&chip)" para inicialização do barramento GPIO da Jetson.
-    // Ela retorna uma struct contendo ponteiros com os endereços de cada linha do GPIO da Jetson para controle pelo Kernell.
-    // Através desses endereços que os pinos de IO são diretamente manipulados, por exemplo, mudanças de nivel lógico.
-    GPIO_Lines gpios_actives= configuraGPIO_Jetson.configura_GPIO_Jetson(&chip);
-
-    // Por segurança, verifica se as linhas "gpios_actives" foram ativadas, configuradas ok, caso contrario o programa é abortado para evitar falhas de hardware:
-    if (!confirma_gpios_actives(gpios_actives, chip))
-        return 1; 
 
 
     // ***********************************************************************************************/
@@ -704,7 +857,7 @@ int main(int argc, char *argv[]) {
     // Carregar os parametros para controle do motor lendo o arquivo "params_triagulacao.json":
     // Embora esses parametros sejam gerados em tempo de compilação diretamente na struct "parametros_gerais" declarada em "parametros.h",
     // a leitura do .json possibilita alterar o valor desses paramentros em tempo de execução, basta editar o .json e chamar a função para alterar essses valores.
-    if (!lerParametrosTriangulcaoJson(parametros_gerais)){
+    if (!lerParametrosTriangulacaoJson(parametros_gerais)){
         std::cout << "[Erro] Não foi possível abrir arquivo .json" << std::endl;
         return 1;
     }
@@ -803,19 +956,37 @@ int main(int argc, char *argv[]) {
 
             switch (my_char)
             {
-                case '1':{
+                case '1':
+                case 177:
+                {
                         // Efetua a leitura dos biases da camera de eventos:
                         event_cam.readCameraBiases();
                         break;
                 }
                 
                 case '2':
+                case 178:
                         // Chama função para configurar, enviar, os biases à camera de eventos:                    
                         event_cam.readCameraBiases();
                         break;
 
                 case '3':
+                case 179:
                         {
+                            // Le o arquivo "params_triagulacao.json" para atualizar os paramentros usados para tratar o controle do motor.
+                            // Isto possibilita alterar os paramentros em tempo de execução.
+                            if (!lerParametrosTriangulacaoJson(parametros_gerais)){
+                                std::cout << "[Erro] Não foi possível abrir arquivo .json" << std::endl;
+                                return -1;
+                            }
+                                                        
+                            // Se estiver diferente o valor do dutycycle sera atulzizado para o valor definido no .json:
+                            if (pwm_PowerLight.getDutyCycle()!=parametros_gerais.dutyCycle_PWM_B){
+                                //std::cout << "Valor atual do duty-cycle do PWM do laser= " << pwm_PowerLight.getDutyCycle() <<std::endl;
+                                pwm_PowerLight.setDutyCycle(parametros_gerais.dutyCycle_PWM_B);
+                                //std::cout << "Novo valor do duty cycle do PWM do laser = " << pwm_PowerLight.getDutyCycle() <<std::endl;
+                            }    
+
                             // Usa-se uma thread com função lambda, onde:
                             // [&] = Captura: ela captura todas as variáveis e métodos, por referencia, no escopo de main(), pois ela utilzia várias funções e variáveis;
                             // () = Parâmetros: Sem nenhum parâmetro como argumento;
@@ -838,7 +1009,22 @@ int main(int argc, char *argv[]) {
                         } 
 
                 case '4':
+                case 180:
                         {
+                            // Le o arquivo "params_triagulacao.json" para atualizar os paramentros usados para tratar o controle do motor.
+                            // Isto possibilita alterar os paramentros em tempo de execução.
+                            if (!lerParametrosTriangulacaoJson(parametros_gerais)){
+                                std::cout << "[Erro] Não foi possível abrir arquivo .json" << std::endl;
+                                return -1;
+                            }
+
+                            // Se estiver diferente o valor do dutycycle sera atulzizado para o valor definido no .json:
+                            if (pwm_PowerLight.getDutyCycle()!=parametros_gerais.dutyCycle_PWM_B){
+                                //std::cout << "Valor atual do duty-cycle do PWM do laser= " << pwm_PowerLight.getDutyCycle() <<std::endl;
+                                pwm_PowerLight.setDutyCycle(parametros_gerais.dutyCycle_PWM_B);
+                                //std::cout << "Novo valor do duty cycle do PWM do laser = " << pwm_PowerLight.getDutyCycle() <<std::endl;
+                            }
+
                             if (!ledLight.getRunning())
                                 ativaLedLight(ledLight, pwm_BlinkLight, pwm_PowerLight);
                             else
@@ -847,6 +1033,7 @@ int main(int argc, char *argv[]) {
                         }  
                         
                 case '5':
+                case 181:
                         {
                             // Captura uma imagem pela câmera convencional:
                             if (convCam_01){
@@ -860,13 +1047,35 @@ int main(int argc, char *argv[]) {
                         }   
                         
                 case '6':
-                        {
-                            std::thread thread_motor([&]() {                         
-                                varreduraTriangulacao(gpios_actives.controlMotor_Pulso, gpios_actives.controlMotor_Dir, &spi, parametros_gerais, ledLight, pwm_PowerLight); 
+                case 182:
+                        {   
+                            limparTela();
+
+                            // Le o arquivo "params_triagulacao.json" para atualizar os paramentros usados para tratar o controle do motor.
+                            // Isto possibilita alterar os paramentros em tempo de execução.
+                            if (!lerParametrosTriangulacaoJson(parametros_gerais)){
+                                std::cout << "[Erro] Não foi possível abrir arquivo .json" << std::endl;
+                                return -1;
+                            }
+                             
+                            // Se estiver diferente o valor do dutycycle sera atulzizado para o valor definido no .json:
+                            if (pwm_PowerLight.getDutyCycle()!=parametros_gerais.dutyCycle_PWM_B){
+                                //std::cout << "Valor atual do duty-cycle do PWM do laser= " << pwm_PowerLight.getDutyCycle() <<std::endl;
+                                pwm_PowerLight.setDutyCycle(parametros_gerais.dutyCycle_PWM_B);
+                                //std::cout << "Novo valor do duty cycle do PWM do laser = " << pwm_PowerLight.getDutyCycle() <<std::endl;
+                            }
+
+                            // Incia thread para varredura da triangulação laser: 
+                            std::thread thread_motor([&]() {    
+                                // testa se usa o laser pulsado ou continuo, parametros lido do arquivo .jason e armazenado em parametros_gerais: 
+                                if (parametros_gerais.laser_pulsado)
+                                   varreduraTriangulacaoLaserPulsado(event_cam, gpios_actives.triggerEventCam, gpios_actives.controlMotor_Pulso, gpios_actives.controlMotor_Dir, &spi, parametros_gerais, ledLight, pwm_PowerLight);
+                                else
+                                   varreduraTriangulacaoLaserContinuo(gpios_actives.controlMotor_Pulso, gpios_actives.controlMotor_Dir, &spi, parametros_gerais, ledLight, pwm_PowerLight); 
                             });
                             thread_motor.detach();    
                             break;  
-                    }
+                        }
                              
                 case '.':
                 case '>': // Incrementa o pwm que controla o tempo de atuação do Led/laser, duração do blink:
