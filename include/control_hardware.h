@@ -1,7 +1,13 @@
-// Autor: Moacir Wendhausen
-// Projeto: VORIS
-// Data: 13/01/2026
+// ***************************************************************************************************************************************************************
+// @ Autor: Moacir Wendhausen    
+// @ Projeto: VORIS
+// @ Data: 10/01/2026
+//
+// Classe pprincipal do sistema de controle da triangulação com projeção de linha laser e camera de eventos. 
+// 
 // Função: Este header contém as declarações das classes e funções relacionadas ao controle de hardware associado ao GPIO e PWM da Jetson Orin Nano
+// ***************************************************************************************************************************************************************
+
 
 #pragma once
 

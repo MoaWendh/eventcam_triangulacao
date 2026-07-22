@@ -8,7 +8,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/controlIO.cpp" "CMakeFiles/triangulacao.dir/controlIO.cpp.o" "gcc" "CMakeFiles/triangulacao.dir/controlIO.cpp.o.d"
+  "/home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/control_hardware.cpp" "CMakeFiles/triangulacao.dir/control_hardware.cpp.o" "gcc" "CMakeFiles/triangulacao.dir/control_hardware.cpp.o.d"
+  "/home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/control_triangulacao.cpp" "CMakeFiles/triangulacao.dir/control_triangulacao.cpp.o" "gcc" "CMakeFiles/triangulacao.dir/control_triangulacao.cpp.o.d"
   "/home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/conv_camera.cpp" "CMakeFiles/triangulacao.dir/conv_camera.cpp.o" "gcc" "CMakeFiles/triangulacao.dir/conv_camera.cpp.o.d"
   "/home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/event_camera.cpp" "CMakeFiles/triangulacao.dir/event_camera.cpp.o" "gcc" "CMakeFiles/triangulacao.dir/event_camera.cpp.o.d"
   "/home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/triangulacao.cpp" "CMakeFiles/triangulacao.dir/triangulacao.cpp.o" "gcc" "CMakeFiles/triangulacao.dir/triangulacao.cpp.o.d"

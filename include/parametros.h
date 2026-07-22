@@ -1,10 +1,16 @@
-// Autor: Moacir Wendhausen
-// Projeto: VORIS
-// Data: 21/01/2026
+
+// ***************************************************************************************************************************************************************
+// @ Autor: Moacir Wendhausen    
+// @ Projeto: VORIS
+// @ Data: 21/01/2026
+//
 // Função: Este header contém as declarações da struct "PARAMETROS_GERAIS", que é usada para armazenar os parâmetros gerais do sistema, 
 // como os tempos de trigger, números de série das câmeras, configurações de PWM, entre outros.
 // COntpem parâmetros associados tanto a ao IO da Jetson Orin Nano, IOs e PWMs, quanto a configuração da câmera de eventos, como os biases, 
 // que são usados para configurar a câmera de eventos via SDK Metavision.
+//
+// ***************************************************************************************************************************************************************
+
 
 #pragma once
 
@@ -42,6 +48,8 @@ struct PARAMETROS_GERAIS {
     // Definição dos paths referentes aos chips de IO da Jeson que geram o PWM: 
     const std::string channelToExport_A= "/sys/class/pwm/pwmchip3/";  
     const std::string channelToExport_B= "/sys/class/pwm/pwmchip2/"; 
+
+    std::string dir_to_save_event_files= "../out/";
 
     // Definição do Duty-cicle dos PWMs, valor em percentual.
     long dutyCycle_PWM_A    = 5;   //  PWM referente ao controle do duty cycle para blink led.

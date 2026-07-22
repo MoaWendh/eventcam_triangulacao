@@ -1,5 +1,5 @@
-CMakeFiles/triangulacao.dir/controlIO.cpp.o: \
- /home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/controlIO.cpp \
+CMakeFiles/triangulacao.dir/control_hardware.cpp.o: \
+ /home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/control_hardware.cpp \
  /usr/include/stdc-predef.h /usr/include/c++/11/iostream \
  /usr/include/aarch64-linux-gnu/c++/11/bits/c++config.h \
  /usr/include/aarch64-linux-gnu/c++/11/bits/os_defines.h \
@@ -183,7 +183,7 @@ CMakeFiles/triangulacao.dir/controlIO.cpp.o: \
  /usr/include/c++/11/tr1/poly_hermite.tcc \
  /usr/include/c++/11/tr1/poly_laguerre.tcc \
  /usr/include/c++/11/tr1/riemann_zeta.tcc \
- /home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/include/controlIO.h \
+ /home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/include/control_hardware.h \
  /usr/include/c++/11/atomic /usr/include/c++/11/bits/atomic_base.h \
  /usr/include/c++/11/bits/atomic_lockfree_defines.h \
  /usr/include/c++/11/fstream /usr/include/c++/11/bits/codecvt.h \

@@ -1,9 +1,13 @@
-// Autor: Moacir Wendhausen
-// Projeto: VORIS
-// Data: 21/01/2026
-// Função: Este arquivo contém a implementação da classe EventCamera, que é responsável por controlar a câmera de eventos usando o SDK Metavision da Prophesee. A classe EventCamera herda todos
-// os métodos e atributos da classe Metavision::Camera, e sobrescreve os métodos de inicialização, configuração de biases, configuração de trigger por hardware, entre outros, para adaptar às 
-// necessidades do projeto.
+// ***************************************************************************************************************************************************************
+// @ Autor: Moacir Wendhausen    
+// @ Projeto: VORIS
+// @ Data: 21/01/2026
+//
+// Função: Este header contém a classe principal que controla a câmera convencional, usando o SDK Spinnaker da FLIR. 
+// A classe ConvCamera herda todos os métodos e atributos da classe Spinnaker::Camera, e sobrescreve os métodos de inicialização, 
+// captura de imagem, entre outros, para adaptar às necessidades do projeto.
+//
+// ***************************************************************************************************************************************************************
 
 
 #include <filesystem>

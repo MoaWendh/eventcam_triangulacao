@@ -83,19 +83,19 @@ CMakeFiles/triangulacao.dir/triangulacao.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/triangulacao.dir/triangulacao.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/triangulacao.cpp -o CMakeFiles/triangulacao.dir/triangulacao.cpp.s
 
-CMakeFiles/triangulacao.dir/controlIO.cpp.o: CMakeFiles/triangulacao.dir/flags.make
-CMakeFiles/triangulacao.dir/controlIO.cpp.o: ../controlIO.cpp
-CMakeFiles/triangulacao.dir/controlIO.cpp.o: CMakeFiles/triangulacao.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/triangulacao.dir/controlIO.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/triangulacao.dir/controlIO.cpp.o -MF CMakeFiles/triangulacao.dir/controlIO.cpp.o.d -o CMakeFiles/triangulacao.dir/controlIO.cpp.o -c /home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/controlIO.cpp
+CMakeFiles/triangulacao.dir/control_hardware.cpp.o: CMakeFiles/triangulacao.dir/flags.make
+CMakeFiles/triangulacao.dir/control_hardware.cpp.o: ../control_hardware.cpp
+CMakeFiles/triangulacao.dir/control_hardware.cpp.o: CMakeFiles/triangulacao.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/triangulacao.dir/control_hardware.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/triangulacao.dir/control_hardware.cpp.o -MF CMakeFiles/triangulacao.dir/control_hardware.cpp.o.d -o CMakeFiles/triangulacao.dir/control_hardware.cpp.o -c /home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/control_hardware.cpp
 
-CMakeFiles/triangulacao.dir/controlIO.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/triangulacao.dir/controlIO.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/controlIO.cpp > CMakeFiles/triangulacao.dir/controlIO.cpp.i
+CMakeFiles/triangulacao.dir/control_hardware.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/triangulacao.dir/control_hardware.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/control_hardware.cpp > CMakeFiles/triangulacao.dir/control_hardware.cpp.i
 
-CMakeFiles/triangulacao.dir/controlIO.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/triangulacao.dir/controlIO.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/controlIO.cpp -o CMakeFiles/triangulacao.dir/controlIO.cpp.s
+CMakeFiles/triangulacao.dir/control_hardware.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/triangulacao.dir/control_hardware.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/control_hardware.cpp -o CMakeFiles/triangulacao.dir/control_hardware.cpp.s
 
 CMakeFiles/triangulacao.dir/conv_camera.cpp.o: CMakeFiles/triangulacao.dir/flags.make
 CMakeFiles/triangulacao.dir/conv_camera.cpp.o: ../conv_camera.cpp
@@ -125,20 +125,36 @@ CMakeFiles/triangulacao.dir/event_camera.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/triangulacao.dir/event_camera.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/event_camera.cpp -o CMakeFiles/triangulacao.dir/event_camera.cpp.s
 
+CMakeFiles/triangulacao.dir/control_triangulacao.cpp.o: CMakeFiles/triangulacao.dir/flags.make
+CMakeFiles/triangulacao.dir/control_triangulacao.cpp.o: ../control_triangulacao.cpp
+CMakeFiles/triangulacao.dir/control_triangulacao.cpp.o: CMakeFiles/triangulacao.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/triangulacao.dir/control_triangulacao.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/triangulacao.dir/control_triangulacao.cpp.o -MF CMakeFiles/triangulacao.dir/control_triangulacao.cpp.o.d -o CMakeFiles/triangulacao.dir/control_triangulacao.cpp.o -c /home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/control_triangulacao.cpp
+
+CMakeFiles/triangulacao.dir/control_triangulacao.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/triangulacao.dir/control_triangulacao.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/control_triangulacao.cpp > CMakeFiles/triangulacao.dir/control_triangulacao.cpp.i
+
+CMakeFiles/triangulacao.dir/control_triangulacao.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/triangulacao.dir/control_triangulacao.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/control_triangulacao.cpp -o CMakeFiles/triangulacao.dir/control_triangulacao.cpp.s
+
 # Object files for target triangulacao
 triangulacao_OBJECTS = \
 "CMakeFiles/triangulacao.dir/triangulacao.cpp.o" \
-"CMakeFiles/triangulacao.dir/controlIO.cpp.o" \
+"CMakeFiles/triangulacao.dir/control_hardware.cpp.o" \
 "CMakeFiles/triangulacao.dir/conv_camera.cpp.o" \
-"CMakeFiles/triangulacao.dir/event_camera.cpp.o"
+"CMakeFiles/triangulacao.dir/event_camera.cpp.o" \
+"CMakeFiles/triangulacao.dir/control_triangulacao.cpp.o"
 
 # External object files for target triangulacao
 triangulacao_EXTERNAL_OBJECTS =
 
 triangulacao: CMakeFiles/triangulacao.dir/triangulacao.cpp.o
-triangulacao: CMakeFiles/triangulacao.dir/controlIO.cpp.o
+triangulacao: CMakeFiles/triangulacao.dir/control_hardware.cpp.o
 triangulacao: CMakeFiles/triangulacao.dir/conv_camera.cpp.o
 triangulacao: CMakeFiles/triangulacao.dir/event_camera.cpp.o
+triangulacao: CMakeFiles/triangulacao.dir/control_triangulacao.cpp.o
 triangulacao: CMakeFiles/triangulacao.dir/build.make
 triangulacao: /usr/local/lib/libmetavision_sdk_stream.so.5.1.1
 triangulacao: /usr/lib/aarch64-linux-gnu/libboost_program_options.so.1.74.0
@@ -154,7 +170,7 @@ triangulacao: /usr/local/lib/libmetavision_hal_discovery.so.5.1.1
 triangulacao: /usr/local/lib/libmetavision_hal.so.5.1.1
 triangulacao: /usr/local/lib/libmetavision_sdk_base.so.5.1.1
 triangulacao: CMakeFiles/triangulacao.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable triangulacao"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable triangulacao"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/triangulacao.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

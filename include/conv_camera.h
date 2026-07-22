@@ -1,9 +1,16 @@
-// Autor: Moacir Wendhausen
-// Projeto: VORIS
-// Data: 21/01/2026
-// Função: Este header contém a classe principal que controla a câmera convencional, usando o SDK Spinnaker da FLIR. 
-// A classe ConvCamera herda todos os métodos e atributos da classe Spinnaker::Camera, e sobrescreve os métodos de inicialização, 
-// captura de imagem, entre outros, para adaptar às necessidades do projeto.
+
+// ***************************************************************************************************************************************************************
+// @ Autor: Moacir Wendhausen    
+// @ Projeto: VORIS
+// @ Data: 15/05/2026
+//
+// Função: 
+//
+// Função: Este arquivo contém a implementação da classe ConvCamera, que é responsável por controlar a câmera convencional usando o SDK Spinnaker da FLIR. 
+// A classe ConvCamera herda todos os métodos e atributos da classe Spinnaker::Camera, e sobrescreve os métodos de inicialização, captura de imagem, entre outros, 
+// para adaptar às necessidades do projeto.
+// ***************************************************************************************************************************************************************
+
 
 #pragma once
 

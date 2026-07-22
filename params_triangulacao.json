@@ -44,7 +44,7 @@
    "params_laser": [
       {
          "name": "pulsado",
-         "value": false
+         "value": true
       },
 
       {
@@ -72,6 +72,13 @@
       {
          "name": "periodo_pwm_B",
          "value": 500000
+      }
+   ],
+
+   "params_generic":[
+      {
+         "name": "dir_to_save",
+         "value": "../out/"
       }
    ]
 

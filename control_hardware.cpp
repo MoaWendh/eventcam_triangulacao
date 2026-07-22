@@ -1,10 +1,20 @@
+// ***************************************************************************************************************************************************************
+// @ Autor: Moacir Wendhausen    
+// @ Projeto: VORIS
+// @ Data: 10/01/2026
+//
+// Classe pprincipal do sistema de controle da triangulação com projeção de linha laser e camera de eventos. 
+// 
+// Função: Este header contém as declarações das classes e funções relacionadas ao controle de hardware associado ao GPIO e PWM da Jetson Orin Nano
+// ***************************************************************************************************************************************************************
+
 #include <iostream>
 #include <thread>
 #include <chrono>
 #include <gpiod.h>
 #include <cmath>
 
-#include "controlIO.h"
+#include "control_hardware.h"
 #include "parametros.h"
 
 
@@ -113,7 +123,7 @@ GPIO_Lines ConfigJetson::configura_GPIO_Jetson(struct gpiod_chip **chip_ptr) {
         // Garantir que o pino do IO da Jetson inicie em nivel baixo:
         gpiod_line_set_value(lines_aux.controlMotor_Pulso, 0);
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
-        std::cout << "Jetson: Controle MOTOR Pulso ......... pino: " << pinos.header_pin_IO_A << " (Nivel= 0V)"<< std::endl; 
+        std::cout << "Jetson: Controle MOTOR Pulso .......... pino: " << pinos.header_pin_IO_A << " (Nivel= 0V)"<< std::endl; 
     } 
     else {
         perror("[ERRO de Request] Não foi possível configurar como OUTPUT o pino de controle da Fase 01 do MOTOR.");
@@ -126,7 +136,7 @@ GPIO_Lines ConfigJetson::configura_GPIO_Jetson(struct gpiod_chip **chip_ptr) {
         // Garantir que o pino do IO da Jetson inicie em nivel baixo:
         gpiod_line_set_value(lines_aux.controlMotor_Dir, 0);
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
-        std::cout << "Jetson: Controle MOTOR Dir ......... pino: " << pinos.header_pin_IO_B << " (Nivel= 0V)"<< std::endl; 
+        std::cout << "Jetson: Controle MOTOR Dir ............ pino: " << pinos.header_pin_IO_B << " (Nivel= 0V)"<< std::endl; 
         std::cout << std::endl;
     } 
     else {
@@ -238,7 +248,7 @@ bool PWM::setPeriodo(int64_t periodo_ns){
 
     // Configura o periodo:
     if (writeToFile("period", std::to_string(period))){
-        std::cout << "Periodo PWM.............."<< this->nome << "= "<< period/1000000 << "ms ("<<1000000000/period << " Hz)" << std::endl;
+        std::cout << "Periodo "<< this->nome << "..............= "<< period/1000000 << "ms ("<<1000000000/period << " Hz)" << std::endl;
         set_ok= true;
         usleep(50000);
     }
@@ -256,7 +266,7 @@ bool PWM::setDutyCycle(int64_t dutyCycle_percentual) {
     // Configura o duty_cycle
     int64_t dutyCycle_ns= (dutyCycle*period)/100;
     if (writeToFile("duty_cycle", std::to_string(dutyCycle_ns))){
-       // std::cout << "Duty-Cycle PWM..........."<< this->nome << "= "<< dutyCycle << "% ("<< dutyCycle_ns << "ns)." << std::endl;
+        std::cout << "Duty-Cycle "<< this->nome << "...........= "<< dutyCycle << "% ("<< dutyCycle_ns << "ns)." << std::endl;
         set_ok= true;
         usleep(50000); 
     }
@@ -332,10 +342,10 @@ void SPIDevice::finaliza(){
     if (spi_open){ 
         close(spi_fd);
         spi_open= false;
-        std::cout << " Status spi_open= " << spi_open << std::endl;
+        std::cout << "Status spi_open= " << spi_open << std::endl;
     }    
     else
-        std::cout << " SPI já estava fechada | spi_open= )" << spi_open << std::endl;;
+        std::cout << "SPI já estava fechada | spi_open= )" << spi_open << std::endl;;
 }
 
 

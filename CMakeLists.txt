@@ -47,7 +47,7 @@ include_directories(
 )
 
 # 3. Definição do Executável
-set(SOURCE_FILE triangulacao.cpp controlIO.cpp conv_camera.cpp event_camera.cpp) # 
+set(SOURCE_FILE triangulacao.cpp control_hardware.cpp conv_camera.cpp event_camera.cpp control_triangulacao.cpp) # 
 add_executable(triangulacao ${SOURCE_FILE})
 
 # 4. Linkagem de Bibliotecas

@@ -81,12 +81,12 @@ clean: CMakeFiles/triangulacao.dir/clean
 CMakeFiles/triangulacao.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/triangulacao.dir/build.make CMakeFiles/triangulacao.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/triangulacao.dir/build.make CMakeFiles/triangulacao.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/build/CMakeFiles --progress-num=1,2,3,4,5 "Built target triangulacao"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/build/CMakeFiles --progress-num=1,2,3,4,5,6 "Built target triangulacao"
 .PHONY : CMakeFiles/triangulacao.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/triangulacao.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/build/CMakeFiles 5
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/build/CMakeFiles 6
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/triangulacao.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/jetson/workspace_eventcam/moacir/eventcam_triangulacao_laser/build/CMakeFiles 0
 .PHONY : CMakeFiles/triangulacao.dir/rule

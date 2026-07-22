@@ -1,6 +1,6 @@
 # Projeto Voris: Sistema de Triangulação Laser com Câmera de Eventos
-
-**Autor:** Moacir Wendhausen  
+## 👤 Autor
+### Moacir Wendhausen  
 **Data:** 01/07/2026  
 
 ---

@@ -129,29 +129,53 @@ triangulacao/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/triangulacao.dir/build.make CMakeFiles/triangulacao.dir/build
 .PHONY : triangulacao/fast
 
-controlIO.o: controlIO.cpp.o
-.PHONY : controlIO.o
+control_hardware.o: control_hardware.cpp.o
+.PHONY : control_hardware.o
 
 # target to build an object file
-controlIO.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/triangulacao.dir/build.make CMakeFiles/triangulacao.dir/controlIO.cpp.o
-.PHONY : controlIO.cpp.o
+control_hardware.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/triangulacao.dir/build.make CMakeFiles/triangulacao.dir/control_hardware.cpp.o
+.PHONY : control_hardware.cpp.o
 
-controlIO.i: controlIO.cpp.i
-.PHONY : controlIO.i
+control_hardware.i: control_hardware.cpp.i
+.PHONY : control_hardware.i
 
 # target to preprocess a source file
-controlIO.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/triangulacao.dir/build.make CMakeFiles/triangulacao.dir/controlIO.cpp.i
-.PHONY : controlIO.cpp.i
+control_hardware.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/triangulacao.dir/build.make CMakeFiles/triangulacao.dir/control_hardware.cpp.i
+.PHONY : control_hardware.cpp.i
 
-controlIO.s: controlIO.cpp.s
-.PHONY : controlIO.s
+control_hardware.s: control_hardware.cpp.s
+.PHONY : control_hardware.s
 
 # target to generate assembly for a file
-controlIO.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/triangulacao.dir/build.make CMakeFiles/triangulacao.dir/controlIO.cpp.s
-.PHONY : controlIO.cpp.s
+control_hardware.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/triangulacao.dir/build.make CMakeFiles/triangulacao.dir/control_hardware.cpp.s
+.PHONY : control_hardware.cpp.s
+
+control_triangulacao.o: control_triangulacao.cpp.o
+.PHONY : control_triangulacao.o
+
+# target to build an object file
+control_triangulacao.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/triangulacao.dir/build.make CMakeFiles/triangulacao.dir/control_triangulacao.cpp.o
+.PHONY : control_triangulacao.cpp.o
+
+control_triangulacao.i: control_triangulacao.cpp.i
+.PHONY : control_triangulacao.i
+
+# target to preprocess a source file
+control_triangulacao.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/triangulacao.dir/build.make CMakeFiles/triangulacao.dir/control_triangulacao.cpp.i
+.PHONY : control_triangulacao.cpp.i
+
+control_triangulacao.s: control_triangulacao.cpp.s
+.PHONY : control_triangulacao.s
+
+# target to generate assembly for a file
+control_triangulacao.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/triangulacao.dir/build.make CMakeFiles/triangulacao.dir/control_triangulacao.cpp.s
+.PHONY : control_triangulacao.cpp.s
 
 conv_camera.o: conv_camera.cpp.o
 .PHONY : conv_camera.o
@@ -234,9 +258,12 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... triangulacao"
-	@echo "... controlIO.o"
-	@echo "... controlIO.i"
-	@echo "... controlIO.s"
+	@echo "... control_hardware.o"
+	@echo "... control_hardware.i"
+	@echo "... control_hardware.s"
+	@echo "... control_triangulacao.o"
+	@echo "... control_triangulacao.i"
+	@echo "... control_triangulacao.s"
 	@echo "... conv_camera.o"
 	@echo "... conv_camera.i"
 	@echo "... conv_camera.s"
